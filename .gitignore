@@ -1,0 +1,10 @@
+@"
+*.pyc
+__pycache__/
+instance/
+.venv/
+venv/
+.env
+database.db
+website/database.db
+"@ > .gitignore

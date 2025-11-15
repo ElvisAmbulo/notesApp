@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: notesapp
+    env: python
+    repo: "<ElvisAmbulo>/<notesApp>"
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app
+    plan: free

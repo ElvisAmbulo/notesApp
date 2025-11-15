@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+  <h1 class="text-center">Notes</h1>
+
+  <ul class="list-group list-group-flush" id="notes">
+    {% if current_user.notes %}
+      {% for note in current_user.notes %}
+        <li id="note-{{ note.id }}" class="list-group-item d-flex justify-content-between align-items-start">
+          <div class="flex-grow-1">{{ note.data }}</div>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger ms-3"
+            aria-label="Delete note"
+            onclick="deleteNote({{ note.id }})"
+          >
+            &times;
+          </button>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="list-group-item text-muted">No notes yet — add one below.</li>
+    {% endif %}
+  </ul>
+
+  <form action="" method="POST" class="mt-4">
+    <div class="mb-3">
+      <textarea name="note" id="note" class="form-control" rows="4" placeholder="Write your note here..."></textarea>
+    </div>
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary">Add Note</button>
+    </div>
+  </form>
+
+  <script>
+    async function deleteNote(noteId) {
+      try {
+        const res = await fetch('/delete-note', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ note: noteId }) // backend expects key 'note'
+        });
+
+        if (!res.ok) {
+          console.error('Server returned', res.status);
+          return;
+        }
+
+        const data = await res.json();
+        if (data.success) {
+          // remove the note element from the page
+          const el = document.getElementById(`note-${noteId}`);
+          if (el) el.remove();
+        } else {
+          console.warn('Delete failed on server');
+        }
+      } catch (err) {
+        console.error('Delete failed', err);
+      }
+    }
+  </script>
+{% endblock %}
